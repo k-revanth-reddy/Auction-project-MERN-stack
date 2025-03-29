@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { login } from "../store/auth/authSlice";
+import Swal from 'sweetalert2';
 
 const Login = () => {
   const dispatch = useDispatch();
@@ -25,7 +26,14 @@ const Login = () => {
     try {
       const resultAction = await dispatch(login(formData));
       if (login.fulfilled.match(resultAction)) {
-        navigate("/auction");
+        Swal.fire({
+          title: 'Success!',
+          text: 'Logged in successfully',
+          icon: 'success',
+          confirmButtonText: 'Ok'
+        }).then(() => {
+          navigate("/auction");
+        });
       } else {
         if (resultAction.payload) {
           setError(resultAction.payload);
@@ -118,8 +126,16 @@ const Login = () => {
             />
           </Form.Item>
 
-          <Form.Item name="remember" valuePropName="checked">
-            <Checkbox>Remember me</Checkbox>
+          <Form.Item>
+            <div className="flex justify-between">
+              <Checkbox>Remember me</Checkbox>
+              <span 
+                className="text-blue-600 cursor-pointer"
+                onClick={() => navigate("/forgot-password")}
+              >
+                Forgot Password?
+              </span>
+            </div>
           </Form.Item>
 
           <Form.Item>
@@ -143,3 +159,5 @@ const Login = () => {
 };
 
 export default Login;
+
+

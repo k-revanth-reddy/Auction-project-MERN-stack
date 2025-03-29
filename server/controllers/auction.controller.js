@@ -1,5 +1,5 @@
 import Product from '../models/product.js';
-
+import User from '../models/user.js';
 
 const createAuction = async (req, res) => {
     try {
@@ -129,6 +129,63 @@ const updateAuctionById = async (req, res) => {
     }
 };
 
-export { createAuction, showAuction, auctionById, updateAuctionById };
+const getUserAndProducts = async (req, res) => {
+    try {
+        const user = await User.findById(req.params.id);
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        // Get user's products
+        const products = await Product.find({ seller: req.params.id });
+
+        // Get bids made BY the user on other auctions (excluding their own auctions)
+        const bidsMadeByUser = await Product.aggregate([
+            { 
+                $match: { 
+                    seller: { $ne: user._id } // Exclude user's own auctions
+                }
+            },
+            { $unwind: "$bids" },
+            { 
+                $match: { 
+                    "bids.bidder": user._id 
+                }
+            },
+            { $count: "count" }
+        ]);
+
+        // Get total bids received ON user's auctions
+        const bidsOnUserProducts = await Product.aggregate([
+            { 
+                $match: { 
+                    seller: user._id 
+                }
+            },
+            { $unwind: "$bids" },
+            { $count: "count" }
+        ]);
+
+        const bidStats = {
+            bidsMade: bidsMadeByUser[0]?.count || 0,      // Bids made by user on other auctions
+            bidsReceived: bidsOnUserProducts[0]?.count || 0  // Bids received on user's auctions
+        };
+
+        return res.status(200).json({
+            message: 'User and products found',
+            user: {
+                ...user.toObject(),
+                bidStats
+            },
+            products
+        });
+    } catch (error) {
+        return res.status(500).json({ message: error.message });
+    }
+};
+
+export { createAuction, showAuction, auctionById, updateAuctionById, getUserAndProducts };
+
+
 
 

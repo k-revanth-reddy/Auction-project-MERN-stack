@@ -2,73 +2,71 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 import { jwtDecode } from 'jwt-decode';
 
-const VITE_API = import.meta.env.VITE_API;
-
-const decodeToken = (token) => {
-    try {
-        return token ? jwtDecode(token) : null;
-    } catch (error) {
-        console.error('Error decoding token:', error);
-        return null;
-    }
-};
-
 const initialState = {
-    user: decodeToken(localStorage.getItem('token')),
+    user: null,
     loading: false,
     error: null,
 };
 
-export const login = createAsyncThunk('auth/login', async ({ email, password }, { rejectWithValue }) => {
-    try {
-        const response = await axios.post(`${VITE_API}/api/login`, { email, password });
-        const { token } = response.data;
-        localStorage.setItem('token', token);
-        axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-        const decoded = jwtDecode(token);
-        return decoded;
-    } catch (error) {
-        return rejectWithValue(error.response ? error.response.data.error : 'Login failed. Please try again.');
+export const login = createAsyncThunk(
+    'auth/login',
+    async ({ email, password }, { rejectWithValue }) => {
+        try {
+            const response = await axios.post(`${import.meta.env.VITE_API}/api/login`, { 
+                email, 
+                password 
+            });
+            
+            const { token } = response.data;
+            
+            // Store token in localStorage
+            localStorage.setItem('token', token);
+            
+            // Set axios default header
+            axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+            
+            // Decode token and return user data
+            const decoded = jwtDecode(token);
+            return {
+                userId: decoded.userId,
+                name: decoded.name,
+                email: decoded.email
+            };
+        } catch (error) {
+            return rejectWithValue(error.response?.data?.error || 'Login failed');
+        }
     }
+);
+
+export const checkAuth = createAsyncThunk('auth/checkAuth', async () => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+        throw new Error('No token found');
+    }
+    const decoded = jwtDecode(token);
+    return decoded;
+});
+
+export const deleteAccount = createAsyncThunk('auth/deleteAccount', async () => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+        throw new Error('No token found');
+    }
+    await axios.delete(`${import.meta.env.VITE_API}/api/user`, {
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
+    });
+    localStorage.removeItem('token');
+    delete axios.defaults.headers.common['Authorization'];
 });
 
 export const signup = createAsyncThunk('auth/signup', async ({ name, email, password }, { rejectWithValue }) => {
     try {
-        const response = await axios.post(`${VITE_API}/api/signup`, { name, email, password });
-        const { token } = response.data;
-        localStorage.setItem('token', token);
-        axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-        const decoded = jwtDecode(token);
-        return decoded;
+        const response = await axios.post(`${import.meta.env.VITE_API}/api/signup`, { name, email, password });
+        return { message: response.data.message };
     } catch (error) {
         return rejectWithValue(error.response ? error.response.data.error : 'Signup failed. Please try again.');
-    }
-});
-
-export const deleteAccount = createAsyncThunk('auth/deleteAccount', async (userId, { rejectWithValue }) => {
-    try {
-        await axios.delete(`${VITE_API}/api/delete`, { data: { userId } });
-        localStorage.removeItem('token');
-        delete axios.defaults.headers.common['Authorization'];
-        return null;
-    } catch (error) {
-        return rejectWithValue('Failed to delete account.');
-    }
-});
-
-export const checkAuth = createAsyncThunk('auth/checkAuth', async (_, { rejectWithValue }) => {
-    try {
-        const token = localStorage.getItem('token');
-        if (!token) {
-            throw new Error('No token found');
-        }
-        axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-        const decoded = jwtDecode(token);
-        return decoded;
-    } catch (error) {
-        localStorage.removeItem('token');
-        delete axios.defaults.headers.common['Authorization'];
-        return rejectWithValue('Failed to authenticate.');
     }
 });
 
@@ -85,17 +83,6 @@ const authSlice = createSlice({
     },
     extraReducers: (builder) => {
         builder
-            .addCase(checkAuth.pending, (state) => {
-                state.loading = true;
-            })
-            .addCase(checkAuth.fulfilled, (state, { payload }) => {
-                state.user = payload;
-                state.loading = false;
-            })
-            .addCase(checkAuth.rejected, (state, { payload }) => {
-                state.error = payload;
-                state.loading = false;
-            })
             .addCase(login.pending, (state) => {
                 state.loading = true;
                 state.error = null;
@@ -103,18 +90,31 @@ const authSlice = createSlice({
             .addCase(login.fulfilled, (state, { payload }) => {
                 state.loading = false;
                 state.user = payload;
+                state.error = null;
             })
             .addCase(login.rejected, (state, { payload }) => {
                 state.loading = false;
                 state.error = payload;
             })
+            .addCase(checkAuth.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(checkAuth.fulfilled, (state, { payload }) => {
+                state.loading = false;
+                state.user = payload;
+            })
+            .addCase(checkAuth.rejected, (state, { payload }) => {
+                state.loading = false;
+                state.error = payload;
+                state.user = null;
+            })
             .addCase(signup.pending, (state) => {
                 state.loading = true;
                 state.error = null;
             })
-            .addCase(signup.fulfilled, (state, { payload }) => {
+            .addCase(signup.fulfilled, (state) => {
                 state.loading = false;
-                state.user = payload;
             })
             .addCase(signup.rejected, (state, { payload }) => {
                 state.loading = false;
@@ -133,3 +133,8 @@ const authSlice = createSlice({
 
 export const { logout } = authSlice.actions;
 export default authSlice.reducer;
+
+
+
+
+

@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { logout, deleteAccount } from "../store/auth/authSlice";
 import DialogBox from "./DialogBox";
+import { CgProfile } from "react-icons/cg";
 
 const Navbar = () => {
   const dispatch = useDispatch();
@@ -16,7 +17,7 @@ const Navbar = () => {
   const navMenu = [
     { title: "Home", url: "/auction" },
     { title: "My Auction", url: `/auction/user/${user.userId}` },
-    { title: "Create Auction", url: "/create-auction" },
+    { title: "Create Auction", url: "/auction/create" },
     { title: "Accounts", url: "#" },
   ];
 
@@ -82,15 +83,11 @@ const Navbar = () => {
               id="dropdownUserAvatarButton"
               onClick={openMenu}
               ref={buttonRef}
-              className="flex text-sm bg-gray-800 rounded-full md:me-0 focus:ring-4 focus:ring-gray-300"
+              className="flex text-sm bg-gray-100 rounded-full md:me-0 focus:ring-4 focus:ring-gray-300 p-2"
               type="button"
             >
               <span className="sr-only">open user menu</span>
-              <img
-                className="w-8 h-8 rounded-full"
-                src="https://flowbite.com/docs/images/people/profile-picture-2.jpg"
-                alt="user photo"
-              />
+              <CgProfile className="w-6 h-6 text-gray-600" />
             </button>
 
             {open && (
@@ -164,3 +161,5 @@ const Navbar = () => {
 };
 
 export default Navbar;
+
+

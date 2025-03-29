@@ -1,4 +1,4 @@
-import { Button, Card, Checkbox, Form, Input } from "antd";
+import { Button, Card, Checkbox, Form, Input, message } from "antd";
 import { FiHome } from "react-icons/fi";
 import { IoArrowBackSharp } from "react-icons/io5";
 import { useNavigate } from "react-router-dom";
@@ -9,10 +9,8 @@ import { signup } from "../store/auth/authSlice";
 const Signup = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-
-  const { user, errorData } = useSelector((state) => state.auth);
+  const { loading, error: errorData } = useSelector((state) => state.auth);
   const [error, setError] = useState(errorData);
-
   const [formData, setformData] = useState({
     name: "",
     email: "",
@@ -31,7 +29,8 @@ const Signup = () => {
     try {
       const resultAction = await dispatch(signup(formData));
       if (signup.fulfilled.match(resultAction)) {
-        navigate("/auction");
+        message.success(resultAction.payload.message);
+        navigate("/login");
       } else {
         if (resultAction.payload) {
           setError(resultAction.payload);
@@ -44,12 +43,6 @@ const Signup = () => {
       console.error(error);
     }
   };
-
-  useEffect(() => {
-    if (user) {
-      navigate("/auction");
-    }
-  }, [user, navigate]);
 
   return (
     <div className="min-h-svh min-w-full flex flex-col items-center justify-center">
@@ -167,3 +160,4 @@ const Signup = () => {
 };
 
 export default Signup;
+

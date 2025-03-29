@@ -13,6 +13,9 @@ import { Provider } from "react-redux";
 import CreateAuction from "./components/CreateAuction.jsx";
 import MyAuction from "./pages/MyAuction.jsx";
 import Product from "./pages/Product.jsx";
+import EmailVerification from "./pages/EmailVerification.jsx";
+import ForgotPassword from "./pages/ForgotPassword.jsx";
+import ResetPassword from "./pages/ResetPassword.jsx";
 
 const router = createBrowserRouter([
   {
@@ -29,27 +32,39 @@ const router = createBrowserRouter([
     element: <Signup />,
   },
   {
-    path: "/",
+    path: "/verify-email/:token",
+    element: <EmailVerification />,
+  },
+  {
+    path: "/auction",
     element: <App />,
     errorElement: <Error />,
     children: [
       {
-        path: "auction",
+        path: "", // This will match /auction exactly
         element: <Dashboard />,
       },
       {
-        path: "create-auction",
+        path: "create", // This will match /auction/create
         element: <CreateAuction />,
       },
       {
-        path: "auction/user/:userId",
+        path: "user/:userId", // This will match /auction/user/:userId
         element: <MyAuction />,
       },
       {
-        path: "auction/:productId",
+        path: ":productId", // This will match /auction/:productId
         element: <Product />,
       },
     ],
+  },
+  {
+    path: "/forgot-password",
+    element: <ForgotPassword />,
+  },
+  {
+    path: "/reset-password/:token",
+    element: <ResetPassword />,
   },
 ]);
 
@@ -60,3 +75,6 @@ ReactDOM.createRoot(document.getElementById("root")).render(
     </Provider>
   </React.StrictMode>
 );
+
+
+

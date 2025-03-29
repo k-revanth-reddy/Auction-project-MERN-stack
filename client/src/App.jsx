@@ -1,4 +1,4 @@
-import { Navigate, Outlet } from "react-router-dom";
+import { Outlet, Navigate } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import { useSelector, useDispatch } from "react-redux";
@@ -21,7 +21,7 @@ function App() {
     <>
       <Navbar />
       <main>
-        <Outlet />
+        <Outlet /> {/* This renders the child routes */}
       </main>
       <Footer />
     </>
@@ -31,3 +31,4 @@ function App() {
 }
 
 export default App;
+

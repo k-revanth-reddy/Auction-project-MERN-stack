@@ -37,9 +37,12 @@ export const fetchUserAndProducts = createAsyncThunk(
             if (token) {
                 axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
             }
-            const response = await axios.get(`${VITE_API}/api/${userId}`);
+            // Updated endpoint to match the new route
+            const response = await axios.get(`${VITE_API}/api/auction/user/${userId}`);
+            console.log('API Response:', response.data);
             return response.data;
         } catch (error) {
+            console.error('Error fetching user and products:', error);
             return rejectWithValue(error.response?.data || "An unexpected error occurred.");
         }
     }
@@ -112,3 +115,5 @@ const auctionSlice = createSlice({
 });
 
 export default auctionSlice.reducer;
+
+
