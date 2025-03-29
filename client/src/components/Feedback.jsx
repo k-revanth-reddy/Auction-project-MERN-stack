@@ -11,13 +11,22 @@ const Feedback = () => {
     const handleSubmit = async (values) => {
         setLoading(true);
         try {
+            // Get the token from localStorage
+            const token = localStorage.getItem('token');
+            
             const response = await axios.post(
                 `${import.meta.env.VITE_API}/api/feedback/create`,
-                values
+                values,
+                {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                }
             );
             message.success('Thank you for your feedback!');
             form.resetFields();
         } catch (error) {
+            console.error('Feedback submission error:', error);
             message.error(error.response?.data?.error || 'Failed to submit feedback');
         } finally {
             setLoading(false);

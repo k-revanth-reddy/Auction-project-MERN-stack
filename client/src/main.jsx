@@ -17,6 +17,7 @@ import EmailVerification from "./pages/EmailVerification.jsx";
 import ForgotPassword from "./pages/ForgotPassword.jsx";
 import Feedback from "./components/Feedback.jsx";
 import FeedbackList from "./components/FeedbackList.jsx";
+import PublicFeedbacks from "./components/PublicFeedbacks.jsx";
 
 const router = createBrowserRouter([
   {
@@ -60,6 +61,10 @@ const router = createBrowserRouter([
     ],
   },
   {
+    path: "/testimonials",
+    element: <PublicFeedbacks />, // Direct component render without App wrapper
+  },
+  {
     path: "/feedback",
     element: <App />,
     children: [
@@ -86,6 +91,8 @@ ReactDOM.createRoot(document.getElementById("root")).render(
     </Provider>
   </React.StrictMode>
 );
+
+
 
 
 

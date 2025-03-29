@@ -6,6 +6,6 @@ const feedbackRouter = express.Router();
 
 feedbackRouter.post('/create', auth, createFeedback);
 feedbackRouter.get('/user', auth, getUserFeedbacks);
-feedbackRouter.get('/all', auth, getAllFeedbacks);
+feedbackRouter.get('/all', getAllFeedbacks); // Remove auth middleware for public access
 
 export default feedbackRouter;

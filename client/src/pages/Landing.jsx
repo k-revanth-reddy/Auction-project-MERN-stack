@@ -24,8 +24,8 @@ const Landing = () => {
       url: "#",
     },
     {
-      title: "Auction",
-      url: "#",
+      title: "Testimonials",
+      url: "/testimonials",
     },
     {
       title: "Contact",
@@ -41,29 +41,27 @@ const Landing = () => {
 
   return (
     <>
-      {/* Navbar section */}
-      <nav className="border-b border sticky top-0 bg-white z-50 md:px-10 px-4">
+      <nav className="bg-white">
         <Flex
           align="center"
           justify="space-between"
-          style={{ padding: "0.6rem 0.5rem" }}
+          className="container px-6 py-4 mx-auto lg:px-12"
         >
-          <Typography.Title
-            level={3}
-            style={{
-              color: "#4B4453",
-            }}
-          >
+          <Typography.Title level={3} style={{ margin: 0 }}>
             Kipa Auction
           </Typography.Title>
-
           <Flex
             align="center"
             justify="space-between"
             className="hidden md:flex"
           >
             {navMenu.map((menu, index) => (
-              <Button key={index} type="text" size="large">
+              <Button 
+                key={index} 
+                type="text" 
+                size="large"
+                onClick={() => menu.url.startsWith('#') ? null : navigate(menu.url)}
+              >
                 {menu.title}
               </Button>
             ))}
@@ -101,11 +99,24 @@ const Landing = () => {
                 type="text"
                 size="large"
                 block
-                onClick={() => setVisible(false)}
+                onClick={() => {
+                  if (!menu.url.startsWith('#')) {
+                    navigate(menu.url);
+                  }
+                  setVisible(false);
+                }}
               >
                 {menu.title}
               </Button>
             ))}
+            <div className="mt-4">
+              <Button block onClick={() => navigate("/login")} className="mb-2">
+                Login
+              </Button>
+              <Button block type="primary" onClick={() => navigate("/signup")}>
+                Sign up
+              </Button>
+            </div>
           </Drawer>
         </Flex>
       </nav>
@@ -162,3 +173,4 @@ const Landing = () => {
 };
 
 export default Landing;
+

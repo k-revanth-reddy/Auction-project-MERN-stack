@@ -3,7 +3,16 @@ import Feedback from '../models/feedback.js';
 export const createFeedback = async (req, res) => {
     try {
         const { rating, comment, category } = req.body;
-        const userId = req.user.userId; // From auth middleware
+        
+        if (!req.user || !req.user.userId) {
+            return res.status(401).json({ error: "User not authenticated" });
+        }
+
+        const userId = req.user.userId;
+
+        if (!rating || !comment || !category) {
+            return res.status(400).json({ error: "Missing required fields" });
+        }
 
         const newFeedback = new Feedback({
             userId,
@@ -41,7 +50,8 @@ export const getAllFeedbacks = async (req, res) => {
     try {
         const feedbacks = await Feedback.find()
             .populate('userId', 'name email')
-            .sort({ createdAt: -1 });
+            .sort({ createdAt: -1 })
+            .limit(10); // Limit to most recent 10 feedbacks
         
         res.status(200).json({ feedbacks });
     } catch (error) {
@@ -49,3 +59,4 @@ export const getAllFeedbacks = async (req, res) => {
         res.status(500).json({ error: "Failed to fetch feedbacks" });
     }
 };
+
