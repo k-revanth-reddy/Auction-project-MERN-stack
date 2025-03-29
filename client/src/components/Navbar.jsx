@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { logout, deleteAccount } from "../store/auth/authSlice";
 import DialogBox from "./DialogBox";
 import { CgProfile } from "react-icons/cg";
+import { MdFeedback } from "react-icons/md";
 
 const Navbar = () => {
   const dispatch = useDispatch();
@@ -18,6 +19,7 @@ const Navbar = () => {
     { title: "Home", url: "/auction" },
     { title: "My Auction", url: `/auction/user/${user.userId}` },
     { title: "Create Auction", url: "/auction/create" },
+    { title: "Feedback", url: "/feedback" },
     { title: "Accounts", url: "#" },
   ];
 
@@ -146,7 +148,14 @@ const Navbar = () => {
                   to={menu.url}
                   className="block py-2 px-3 text-gray-900 hover:text-gray-900 rounded md:text-gray-800 md:p-0"
                 >
-                  {menu.title}
+                  {menu.title === "Feedback" ? (
+                    <span className="flex items-center gap-1">
+                      <MdFeedback className="inline" />
+                      {menu.title}
+                    </span>
+                  ) : (
+                    menu.title
+                  )}
                 </Link>
               </li>
             ))}
@@ -161,5 +170,6 @@ const Navbar = () => {
 };
 
 export default Navbar;
+
 
 

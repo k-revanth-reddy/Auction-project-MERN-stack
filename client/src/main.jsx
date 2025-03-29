@@ -15,7 +15,8 @@ import MyAuction from "./pages/MyAuction.jsx";
 import Product from "./pages/Product.jsx";
 import EmailVerification from "./pages/EmailVerification.jsx";
 import ForgotPassword from "./pages/ForgotPassword.jsx";
-import ResetPassword from "./pages/ResetPassword.jsx";
+import Feedback from "./components/Feedback.jsx";
+import FeedbackList from "./components/FeedbackList.jsx";
 
 const router = createBrowserRouter([
   {
@@ -59,12 +60,22 @@ const router = createBrowserRouter([
     ],
   },
   {
-    path: "/forgot-password",
-    element: <ForgotPassword />,
+    path: "/feedback",
+    element: <App />,
+    children: [
+      {
+        path: "",
+        element: <Feedback />,
+      },
+      {
+        path: "history",
+        element: <FeedbackList />,
+      },
+    ],
   },
   {
-    path: "/reset-password/:token",
-    element: <ResetPassword />,
+    path: "/forgot-password",
+    element: <ForgotPassword />,
   },
 ]);
 
@@ -75,6 +86,8 @@ ReactDOM.createRoot(document.getElementById("root")).render(
     </Provider>
   </React.StrictMode>
 );
+
+
 
 
 
